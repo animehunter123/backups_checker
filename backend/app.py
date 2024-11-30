@@ -139,10 +139,12 @@ def get_servers():
 def scan_directories():
     """Trigger a directory scan."""
     try:
-        script_path = Path(__file__).parent / 'scan_dirs' / 'scan_dirs.py'
+        backend_dir = Path(__file__).parent
+        script_path = backend_dir / 'scan_dirs' / 'scan_dirs.py'
         process = subprocess.Popen(['python3', str(script_path)], 
                                  stdout=subprocess.PIPE, 
-                                 stderr=subprocess.PIPE)
+                                 stderr=subprocess.PIPE,
+                                 cwd=str(backend_dir))  # Set working directory to backend
         stdout, stderr = process.communicate()
         
         if process.returncode == 0:
@@ -165,10 +167,12 @@ def scan_directories():
 def scan_servers():
     """Trigger a server scan."""
     try:
-        script_path = Path(__file__).parent / 'scan_servers' / 'scan_servers.py'
+        backend_dir = Path(__file__).parent
+        script_path = backend_dir / 'scan_servers' / 'scan_servers.py'
         process = subprocess.Popen(['sudo', 'python3', str(script_path)], 
                                  stdout=subprocess.PIPE, 
-                                 stderr=subprocess.PIPE)
+                                 stderr=subprocess.PIPE,
+                                 cwd=str(backend_dir))  # Set working directory to backend
         stdout, stderr = process.communicate()
         
         if process.returncode == 0:
