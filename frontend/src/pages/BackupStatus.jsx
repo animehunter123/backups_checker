@@ -111,7 +111,12 @@ export default function BackupStatus() {
         };
       });
 
-      setServers(serversWithExtra);
+      // Sort by status (green->yellow->red)
+      const sortedServers = [...serversWithExtra].sort((a, b) => 
+        getStatusInfo(b.backup_status).sortValue - getStatusInfo(a.backup_status).sortValue
+      );
+
+      setServers(sortedServers);
       setError(null);
     } catch (err) {
       setError('Failed to fetch data');
