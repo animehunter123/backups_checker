@@ -53,7 +53,7 @@ export default function Navbar() {
           </Link>
           <Link to="/directories" style={linkStyle}>
             <Button sx={buttonStyle(isActive('/directories'))}>
-              Directories
+              Files
             </Button>
           </Link>
           <Link to="/servers" style={linkStyle}>
