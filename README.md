@@ -2,6 +2,8 @@
 
 A webapp to check if all currently reachable servers have at a backup file in the specified target directories.
 
+<img width="964" alt="Sample Photo of Backup Checker Web App" src="https://github.com/user-attachments/assets/147e789a-9b0e-4165-a1d1-d5630deb8b62">
+
 # Milestone Goals
 
 - [ ] Add a list of servers to check (using pypimap to fetch hostname, ip, ports, last scan time)
@@ -15,3 +17,5 @@ A webapp to check if all currently reachable servers have at a backup file in th
 * Create Vite Front End, and Python Backend for 1. Scanning Live Network, 2. Scanning Directories
 
 * Ensure the requirements.txt has flask, python-nmap, requests, and urllib3
+
+* Front end requirements: cd frontend && npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios // npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios ; npm install
