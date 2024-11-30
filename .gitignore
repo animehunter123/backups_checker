@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Other specific things to ignore from my environment 
+.venv
+__pycache__
+backup_checker.db
