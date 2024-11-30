@@ -80,33 +80,19 @@ i.e., just use ```docker-compose up --build```
 
 # To Do
 
-* this is still kind of a "best effort" app, some things are missing... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this:
+* Still a "best effort" to assume backup files match the hostname/ip... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this:
 ```
-10.197.38.12 <--- even though your target server IP is really 10.197.38.1 <-- ughh!!!
+10.197.38.12 <--- even though your target server IP is really 10.197.38.1 <-- This is a case I cannot handle with this webapp idea unfortunately.!!!
 ```
 
 * need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
 
 * need to make the CDN's all become embedded into the app for homelab without internet
 
-* The scan servers and scan directories button does not directly run ./scan_servers or .scan_directories
-
 * Add some type of H1 to explain what this app does, its not easy to understand what this app does atm
-
-* Fix Navbar (its not expanded completely), use tailwind css for styling (instead of the boring bootstrap) --> Actually I think Material UI is the way to go!!!
-
-* add the filename to the backup status (with its original timestamp as well)
 
 * add a search bar and filter for the backup status
 
-* offline the cdn dependencies into the ./public
-
 * Add button to clear files from database, another button to clear servers from database
 
-* Add spinners to make the user aware they need to wait
-
 * Add maybe a log status modal that shows the status as it is nmap scanning, or if it is directory scanning
-
-* Ensure the requirements.txt has flask, python-nmap, requests, and urllib3
-
-* Front end requirements: cd frontend && npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios // npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios ; npm install
