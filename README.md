@@ -82,6 +82,8 @@ i.e., just use ```docker-compose up --build```
 
 * need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
 
+* need to make the CDN's all become embedded into the app for homelab without internet
+
 * The scan servers and scan directories button does not directly run ./scan_servers or .scan_directories
 
 * Add some type of H1 to explain what this app does, its not easy to understand what this app does atm
