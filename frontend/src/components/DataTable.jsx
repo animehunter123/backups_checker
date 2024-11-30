@@ -15,10 +15,10 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-export default function DataTable({ data, columns, onExportCsv }) {
+export default function DataTable({ data, columns, onExportCsv, defaultSort }) {
   const theme = useTheme();
-  const [orderBy, setOrderBy] = useState('');
-  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState(defaultSort?.field || '');
+  const [order, setOrder] = useState(defaultSort?.order || 'asc');
   const [statusFilter, setStatusFilter] = useState('all');
 
   const handleSort = (property) => {
@@ -56,29 +56,29 @@ export default function DataTable({ data, columns, onExportCsv }) {
     return row[column.field];
   };
 
-  const sortedData = [...data].sort((a, b) => {
-    if (!orderBy) return 0;
-    
-    const aValue = getCellValue(a, columns.find(col => col.field === orderBy));
-    const bValue = getCellValue(b, columns.find(col => col.field === orderBy));
+  const sortData = (data) => {
+    if (!orderBy) return data;
 
-    if (aValue === null || aValue === undefined) return 1;
-    if (bValue === null || bValue === undefined) return -1;
+    return [...data].sort((a, b) => {
+      const column = columns.find(col => col.field === orderBy);
+      let aValue = column?.valueGetter ? column.valueGetter(a) : a[orderBy];
+      let bValue = column?.valueGetter ? column.valueGetter(b) : b[orderBy];
 
-    let comparison;
-    if (typeof aValue === 'number') {
-      comparison = aValue - bValue;
-    } else {
-      comparison = aValue.toString().localeCompare(bValue.toString());
-    }
-    
-    return order === 'asc' ? comparison : -comparison;
-  });
+      // Handle undefined/null values
+      if (aValue == null) aValue = '';
+      if (bValue == null) bValue = '';
 
-  const filteredData = sortedData.filter(row => {
-    if (statusFilter === 'all') return true;
-    return row.backup_status === statusFilter;
-  });
+      const result = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      return order === 'asc' ? result : -result;
+    });
+  };
+
+  const filterData = (data) => {
+    if (statusFilter === 'all') return data;
+    return data.filter(row => row.backup_status === statusFilter);
+  };
+
+  const sortedAndFilteredData = filterData(sortData(data));
 
   return (
     <Box>
@@ -186,7 +186,7 @@ export default function DataTable({ data, columns, onExportCsv }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredData.map((row, index) => (
+            {sortedAndFilteredData.map((row, index) => (
               <TableRow 
                 key={row.id || index}
                 sx={{ 

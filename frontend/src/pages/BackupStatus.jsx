@@ -161,6 +161,10 @@ export default function BackupStatus() {
         data={servers}
         columns={columns}
         onExportCsv={handleExportCsv}
+        defaultSort={{
+          field: 'status_label',
+          order: 'desc'
+        }}
       />
     </Box>
   );
