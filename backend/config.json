@@ -1,7 +1,7 @@
 {
     "directories_to_scan": [
-        "/path/to/backup/dir1",
-        "/path/to/backup/dir2"
+        "./example/nas01/",
+        "./example/nas02/"
     ],
     "subnets_to_scan": [
         "172.17.0.0/24",
