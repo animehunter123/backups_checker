@@ -3,8 +3,8 @@
         "/path/to/backup/dir1",
         "/path/to/backup/dir2"
     ],
-    "servers_to_scan": [
-        "server1.example.com",
-        "server2.example.com"
+    "subnets_to_scan": [
+        "172.17.0.0/24",
+        "10.197.38.0/24"
     ]
 }
