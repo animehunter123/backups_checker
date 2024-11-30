@@ -14,7 +14,13 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 # To Do
 
-* Create Vite Front End, and Python Backend for 1. Scanning Live Network, 2. Scanning Directories
+* Fix Navbar
+
+* Add button to clear files from database, another button to clear servers from database
+
+* Add spinners to make the user aware they need to wait
+
+* Add maybe a log status modal that shows the status as it is nmap scanning, or if it is directory scanning
 
 * Ensure the requirements.txt has flask, python-nmap, requests, and urllib3
 
