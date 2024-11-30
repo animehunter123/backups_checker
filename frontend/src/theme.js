@@ -1,27 +1,32 @@
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
+export const getTheme = (mode) => createTheme({
   palette: {
+    mode,
     primary: {
-      main: '#2563eb', // Modern blue
-      light: '#3b82f6',
-      dark: '#1d4ed8',
-      contrastText: '#ffffff',
-    },
-    secondary: {
       main: '#7c3aed', // Modern purple
       light: '#8b5cf6',
       dark: '#6d28d9',
       contrastText: '#ffffff',
     },
+    secondary: {
+      main: '#2563eb', // Modern blue
+      light: '#3b82f6',
+      dark: '#1d4ed8',
+      contrastText: '#ffffff',
+    },
     background: {
-      default: '#f8fafc',
-      paper: '#ffffff',
+      default: mode === 'light' ? '#f8fafc' : '#0f172a',
+      paper: mode === 'light' ? '#ffffff' : '#1e293b',
     },
     text: {
-      primary: '#1e293b',
-      secondary: '#475569',
+      primary: mode === 'light' ? '#1e293b' : '#f8fafc',
+      secondary: mode === 'light' ? '#475569' : '#cbd5e1',
     },
+    navbar: {
+      background: mode === 'light' ? '#8b5cf6' : '#1e293b',
+      text: '#ffffff',
+    }
   },
   typography: {
     fontFamily: [
@@ -91,7 +96,7 @@ const theme = createTheme({
       letterSpacing: '0.01071em',
     },
     button: {
-      textTransform: 'none', // Prevents all-caps buttons
+      textTransform: 'none',
       fontWeight: 500,
     },
   },
@@ -101,11 +106,13 @@ const theme = createTheme({
   components: {
     MuiAppBar: {
       styleOverrides: {
-        root: {
-          backgroundColor: '#ffffff',
-          color: '#1e293b',
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-        },
+        root: ({ theme }) => ({
+          backgroundColor: theme.palette.navbar.background,
+          color: theme.palette.navbar.text,
+          boxShadow: mode === 'light' 
+            ? '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)'
+            : 'none',
+        }),
       },
     },
     MuiButton: {
@@ -126,12 +133,12 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          boxShadow: mode === 'light'
+            ? '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)'
+            : 'none',
           borderRadius: '12px',
         },
       },
     },
   },
 });
-
-export default theme;

@@ -1,8 +1,15 @@
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { ColorModeContext } from '../theme/ColorModeContext';
+import { useTheme } from '@mui/material/styles';
 
 export default function Navbar() {
   const location = useLocation();
+  const theme = useTheme();
+  const colorMode = useContext(ColorModeContext);
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -15,10 +22,12 @@ export default function Navbar() {
   };
 
   const buttonStyle = (active) => ({
-    color: active ? 'primary.main' : 'text.primary',
+    color: theme.palette.navbar.text,
     fontWeight: active ? 600 : 500,
+    opacity: active ? 1 : 0.85,
     '&:hover': {
-      backgroundColor: 'rgba(37, 99, 235, 0.04)',
+      opacity: 1,
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
   });
 
@@ -31,7 +40,7 @@ export default function Navbar() {
           sx={{ 
             flexGrow: 1,
             fontWeight: 600,
-            color: 'primary.main',
+            color: theme.palette.navbar.text,
           }}
         >
           Backup Checker
@@ -52,6 +61,19 @@ export default function Navbar() {
               Servers
             </Button>
           </Link>
+          <IconButton
+            onClick={colorMode.toggleColorMode}
+            color="inherit"
+            sx={{
+              ml: 2,
+              color: theme.palette.navbar.text,
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              }
+            }}
+          >
+            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
         </Box>
       </Toolbar>
     </AppBar>
