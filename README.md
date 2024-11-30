@@ -14,6 +14,8 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 # To Do
 
+* The scan servers and scan directories button does not directly run ./scan_servers or .scan_directories
+
 * Add some type of H1 to explain what this app does, its not easy to understand what this app does atm
 
 * Fix Navbar (its not expanded completely), use tailwind css for styling (instead of the boring bootstrap) --> Actually I think Material UI is the way to go!!!
