@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Typography, Alert, Chip } from '@mui/material';
 import DataTable from '../components/DataTable';
-import { getServers } from '../api';
+import { getServers, getFiles } from '../api';
 
 const getStatusInfo = (status) => {
   switch (status) {
@@ -14,6 +14,18 @@ const getStatusInfo = (status) => {
     default:
       return { label: 'Unknown', color: 'default', sortValue: 0 };
   }
+};
+
+const findMatchingFile = (server, files) => {
+  const serverIdentifiers = [
+    server.hostname?.toLowerCase(),
+    server.ip_address?.toLowerCase()
+  ].filter(Boolean);
+
+  return files.find(file => {
+    const filename = file.filename.toLowerCase();
+    return serverIdentifiers.some(id => filename.includes(id));
+  });
 };
 
 const columns = [
@@ -63,24 +75,33 @@ export default function BackupStatus() {
   const [servers, setServers] = useState([]);
   const [error, setError] = useState(null);
 
-  const fetchServers = async () => {
+  const fetchData = async () => {
     try {
-      const response = await getServers();
-      // Add status_label field for sorting
-      const serversWithLabel = response.servers.map(server => ({
-        ...server,
-        status_label: getStatusInfo(server.backup_status).sortValue
-      }));
-      setServers(serversWithLabel);
+      const [serversResponse, filesResponse] = await Promise.all([
+        getServers(),
+        getFiles()
+      ]);
+
+      // Add status_label and filename fields
+      const serversWithExtra = serversResponse.servers.map(server => {
+        const matchingFile = findMatchingFile(server, filesResponse.files);
+        return {
+          ...server,
+          status_label: getStatusInfo(server.backup_status).sortValue,
+          filename: matchingFile ? matchingFile.filename : 'No matching backup'
+        };
+      });
+
+      setServers(serversWithExtra);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch server data');
+      setError('Failed to fetch data');
       console.error(err);
     }
   };
 
   useEffect(() => {
-    fetchServers();
+    fetchData();
   }, []);
 
   const handleExportCsv = () => {
