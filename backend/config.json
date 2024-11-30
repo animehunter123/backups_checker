@@ -1,0 +1,10 @@
+{
+    "directories_to_scan": [
+        "/path/to/backup/dir1",
+        "/path/to/backup/dir2"
+    ],
+    "servers_to_scan": [
+        "server1.example.com",
+        "server2.example.com"
+    ]
+}
