@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 
+# IMPORTANT!!!!!!
+# You need to run this script with sudo privileges!!!!!! THIS IS BECAUSE WE USE NMAP PIP MODULE HERE
+# sudo python3 app.py
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from database.db_manager import DatabaseManager
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
-import subprocess
 import re
+from scan_dirs.scan_dirs import DirectoryScanner
+from scan_servers.scan_servers import SubnetScanner
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -139,23 +144,20 @@ def get_servers():
 def scan_directories():
     """Trigger a directory scan."""
     try:
-        backend_dir = Path(__file__).parent
-        script_path = backend_dir / 'scan_dirs' / 'scan_dirs.py'
-        process = subprocess.Popen(['python3', str(script_path)], 
-                                 stdout=subprocess.PIPE, 
-                                 stderr=subprocess.PIPE,
-                                 cwd=str(backend_dir))  # Set working directory to backend
-        stdout, stderr = process.communicate()
+        config_path = Path(__file__).parent / 'config.json'
+        scanner = DirectoryScanner(db_manager, str(config_path))
+        results = scanner.scan_directories()
         
-        if process.returncode == 0:
+        if results:
+            total_files = sum(len(files) for files in results.values())
             return jsonify({
                 'status': 'success',
-                'message': 'Directory scan completed successfully'
+                'message': f'Directory scan completed successfully. Found {total_files} files.'
             }), 200
         else:
             return jsonify({
                 'status': 'error',
-                'message': f'Scan failed: {stderr.decode()}'
+                'message': 'No files found during scan'
             }), 500
     except Exception as e:
         return jsonify({
@@ -167,23 +169,26 @@ def scan_directories():
 def scan_servers():
     """Trigger a server scan."""
     try:
-        backend_dir = Path(__file__).parent
-        script_path = backend_dir / 'scan_servers' / 'scan_servers.py'
-        process = subprocess.Popen(['sudo', 'python3', str(script_path)], 
-                                 stdout=subprocess.PIPE, 
-                                 stderr=subprocess.PIPE,
-                                 cwd=str(backend_dir))  # Set working directory to backend
-        stdout, stderr = process.communicate()
+        # Check for root privileges
+        if os.geteuid() != 0:
+            return jsonify({
+                'status': 'error',
+                'message': 'Server scanning requires root privileges. Please run the Flask app with sudo.'
+            }), 500
+            
+        config_path = Path(__file__).parent / 'config.json'
+        scanner = SubnetScanner(db_manager, str(config_path))
+        results = scanner.scan_all_subnets()
         
-        if process.returncode == 0:
+        if results:
             return jsonify({
                 'status': 'success',
-                'message': 'Server scan completed successfully'
+                'message': f'Server scan completed successfully. Found {len(results)} servers.'
             }), 200
         else:
             return jsonify({
                 'status': 'error',
-                'message': f'Scan failed: {stderr.decode()}'
+                'message': 'No servers found during scan'
             }), 500
     except Exception as e:
         return jsonify({
