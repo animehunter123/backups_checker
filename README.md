@@ -35,3 +35,61 @@ A webapp to check if all currently reachable servers have at a backup file in th
 * Ensure the requirements.txt has flask, python-nmap, requests, and urllib3
 
 * Front end requirements: cd frontend && npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios // npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios ; npm install
+
+## Docker Setup
+
+The application can be run using Docker and Docker Compose. This setup includes both the frontend and backend services.
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Running with Docker
+
+1. Clone the repository
+2. Configure your backup directories in `backend/config.json`:
+   ```json
+   {
+     "directories": [
+       "/app/example/nas01",
+       "/app/example/nas02"
+     ],
+     "subnets": [
+       "192.168.1.0/24"
+     ]
+   }
+   ```
+   Note: Directories should be specified relative to the container's `/app` directory.
+
+3. Start the services:
+   ```bash
+   docker-compose up --build
+   ```
+
+4. Access the application:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
+
+### Adding Custom Backup Directories
+
+To monitor additional backup directories:
+
+1. Mount your directories in docker-compose.yml under the backend service:
+   ```yaml
+   volumes:
+     - /path/to/your/backup:/app/custom-backup:ro
+   ```
+
+2. Update the paths in `backend/config.json` to include the new mounted directory:
+   ```json
+   {
+     "directories": [
+       "/app/custom-backup"
+     ]
+   }
+   ```
+
+### Security Note
+
+The backend container runs with elevated privileges (required for nmap scanning). The example directories are mounted as read-only for security.
