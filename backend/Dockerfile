@@ -20,4 +20,5 @@ USER root
 
 EXPOSE 5000
 
-CMD ["python3", "app.py"]
+# Run with Gunicorn
+CMD ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
