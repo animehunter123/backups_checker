@@ -79,6 +79,17 @@ class DatabaseManager:
             print(f"Error clearing scanned files: {e}")
             raise
 
+    def clear_scanned_servers(self):
+        """Remove all entries from the scanned_servers table."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('DELETE FROM scanned_servers')
+                conn.commit()
+        except sqlite3.Error as e:
+            print(f"Error clearing scanned servers: {e}")
+            raise
+
     def add_scanned_file(self, filename: str, filepath: str, last_modified: datetime, size: int) -> int:
         """Add a scanned file to the database."""
         try:
