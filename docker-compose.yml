@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    privileged: true  # Required for nmap scanning
+    volumes:
+      - ./example:/app/example:ro  # Mount example directory as read-only
+      - ./backend/config.json:/app/config.json  # Mount config file for easy modification
+      - backup-data:/app/data  # Persistent volume for database
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - GUNICORN_CMD_ARGS="--access-logfile=- --error-logfile=- --log-level=info"
+    networks:
+      - app-network
+    cap_add:
+      - NET_ADMIN  # Required for network scanning
+      - NET_RAW    # Required for network scanning
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  backup-data:  # Persistent volume for the database
+
+networks:
+  app-network:
+    driver: bridge

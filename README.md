@@ -93,3 +93,5 @@ To monitor additional backup directories:
 ### Security Note
 
 The backend container runs with elevated privileges (required for nmap scanning). The example directories are mounted as read-only for security.
+
+i.e., just use ```docker-compose up --build```
