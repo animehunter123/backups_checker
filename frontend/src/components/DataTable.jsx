@@ -14,11 +14,12 @@ import {
   useTheme
 } from '@mui/material';
 import { useState } from 'react';
+import * as XLSX from 'xlsx';
 
-export default function DataTable({ data, columns, onExportCsv, defaultSort }) {
+export default function DataTable({ data, columns, onExportCsv }) {
   const theme = useTheme();
-  const [orderBy, setOrderBy] = useState(defaultSort?.field || '');
-  const [order, setOrder] = useState(defaultSort?.order || 'asc');
+  const [orderBy, setOrderBy] = useState('');
+  const [order, setOrder] = useState('asc');
   const [statusFilter, setStatusFilter] = useState('all');
 
   const handleSort = (property) => {
@@ -49,11 +50,69 @@ export default function DataTable({ data, columns, onExportCsv, defaultSort }) {
     }
   };
 
-  const getCellValue = (row, column) => {
-    if (column.valueGetter) {
-      return column.valueGetter(row);
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'green': return '#2e7d32';
+      case 'yellow': return '#ed6c02';
+      case 'red': return '#d32f2f';
+      default: return '#000000';
     }
-    return row[column.field];
+  };
+
+  const handleExportExcel = () => {
+    // Create worksheet data with current sort and filter
+    const sortedAndFilteredData = filterData(sortData(data));
+    
+    // Convert data to Excel format
+    const wsData = [
+      columns.map(col => col.headerName), // Headers
+      ...sortedAndFilteredData.map(row => 
+        columns.map(col => {
+          if (col.valueFormatter) {
+            return col.valueFormatter(row[col.field]);
+          }
+          return row[col.field];
+        })
+      )
+    ];
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Add cell styling
+    const statusColumnIndex = columns.findIndex(col => col.field === 'backup_status');
+    if (statusColumnIndex !== -1) {
+      // Skip header row
+      for (let rowIndex = 1; rowIndex < sortedAndFilteredData.length + 1; rowIndex++) {
+        const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: statusColumnIndex });
+        const row = sortedAndFilteredData[rowIndex - 1];
+        const backgroundColor = getBackgroundColor(row).replace('rgba', 'rgb').replace(/, 0.2\)/, ')');
+        
+        if (!ws[cellRef]) ws[cellRef] = {};
+        ws[cellRef].s = {
+          fill: { fgColor: { rgb: backgroundColor.replace('#', '') } },
+          font: { color: { rgb: getStatusColor(row.backup_status).replace('#', '') } }
+        };
+      }
+    }
+
+    // Set column widths
+    const colWidths = columns.map(col => ({
+      wch: Math.max(
+        (col.headerName || '').length,
+        ...sortedAndFilteredData.map(row => 
+          String(row[col.field] || '').length
+        )
+      )
+    }));
+    ws['!cols'] = colWidths;
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Backup Status');
+
+    // Generate Excel file
+    XLSX.writeFile(wb, 'backup_status.xlsx');
   };
 
   const sortData = (data) => {
@@ -82,12 +141,7 @@ export default function DataTable({ data, columns, onExportCsv, defaultSort }) {
 
   return (
     <Box>
-      <Box sx={{ 
-        mb: 2, 
-        display: 'flex', 
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <ToggleButtonGroup
           value={statusFilter}
           exclusive
@@ -95,83 +149,38 @@ export default function DataTable({ data, columns, onExportCsv, defaultSort }) {
           aria-label="status filter"
           size="small"
         >
-          <ToggleButton 
-            value="all" 
-            sx={{ 
-              textTransform: 'none',
-              px: 2,
-            }}
-          >
+          <ToggleButton value="all">
             All
           </ToggleButton>
-          <ToggleButton 
-            value="green"
-            sx={{ 
-              textTransform: 'none',
-              px: 2,
-              '&.Mui-selected': {
-                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(46, 125, 50, 0.3)' : '#e8f5e9',
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(46, 125, 50, 0.4)' : '#c8e6c9'
-                }
-              }
-            }}
-          >
+          <ToggleButton value="green" sx={{ color: theme.palette.success.main }}>
             Good
           </ToggleButton>
-          <ToggleButton 
-            value="yellow"
-            sx={{ 
-              textTransform: 'none',
-              px: 2,
-              '&.Mui-selected': {
-                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(237, 108, 2, 0.3)' : '#fff3e0',
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(237, 108, 2, 0.4)' : '#ffe0b2'
-                }
-              }
-            }}
-          >
+          <ToggleButton value="yellow" sx={{ color: theme.palette.warning.main }}>
             Warning
           </ToggleButton>
-          <ToggleButton 
-            value="red"
-            sx={{ 
-              textTransform: 'none',
-              px: 2,
-              '&.Mui-selected': {
-                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(211, 47, 47, 0.3)' : '#ffebee',
-                '&:hover': {
-                  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(211, 47, 47, 0.4)' : '#ffcdd2'
-                }
-              }
-            }}
-          >
+          <ToggleButton value="red" sx={{ color: theme.palette.error.main }}>
             Error
           </ToggleButton>
         </ToggleButtonGroup>
         <Button 
-          variant="contained" 
-          onClick={onExportCsv}
+          variant="outlined" 
+          onClick={handleExportExcel}
           sx={{ ml: 2 }}
         >
-          Export CSV
+          Export Excel
         </Button>
       </Box>
-      <TableContainer 
-        component={Paper}
-        sx={{
-          backgroundColor: theme.palette.mode === 'dark' ? 'background.paper' : 'background.default',
-        }}
-      >
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell 
+                <TableCell
                   key={column.field}
-                  sx={{
-                    backgroundColor: theme.palette.mode === 'dark' ? 'background.paper' : 'background.default',
+                  sortDirection={orderBy === column.field ? order : false}
+                  sx={{ 
+                    fontWeight: 600,
+                    width: column.width
                   }}
                 >
                   <TableSortLabel
@@ -193,8 +202,8 @@ export default function DataTable({ data, columns, onExportCsv, defaultSort }) {
                   backgroundColor: getBackgroundColor(row),
                   '&:hover': {
                     backgroundColor: theme.palette.mode === 'dark' 
-                      ? 'rgba(255, 255, 255, 0.08)'
-                      : 'rgba(0, 0, 0, 0.04)',
+                      ? 'rgba(255, 255, 255, 0.1)' 
+                      : 'rgba(0, 0, 0, 0.04)'
                   }
                 }}
               >
@@ -202,13 +211,15 @@ export default function DataTable({ data, columns, onExportCsv, defaultSort }) {
                   <TableCell 
                     key={column.field}
                     sx={{
-                      color: theme.palette.text.primary,
+                      width: column.width
                     }}
                   >
-                    {column.renderCell ? column.renderCell(row) : (
-                      column.valueFormatter 
-                        ? column.valueFormatter(row[column.field])
-                        : row[column.field]
+                    {column.renderCell ? (
+                      column.renderCell(row)
+                    ) : column.valueFormatter ? (
+                      column.valueFormatter(row[column.field])
+                    ) : (
+                      row[column.field]
                     )}
                   </TableCell>
                 ))}
