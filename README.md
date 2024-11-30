@@ -12,30 +12,6 @@ A webapp to check if all currently reachable servers have at a backup file in th
 - [ ] Add a backend api to allow launching scan_servers and scan_directories
 - [ ] Add a frontend to allow user input.
 
-# To Do
-
-* The scan servers and scan directories button does not directly run ./scan_servers or .scan_directories
-
-* Add some type of H1 to explain what this app does, its not easy to understand what this app does atm
-
-* Fix Navbar (its not expanded completely), use tailwind css for styling (instead of the boring bootstrap) --> Actually I think Material UI is the way to go!!!
-
-* add the filename to the backup status (with its original timestamp as well)
-
-* add a search bar and filter for the backup status
-
-* offline the cdn dependencies into the ./public
-
-* Add button to clear files from database, another button to clear servers from database
-
-* Add spinners to make the user aware they need to wait
-
-* Add maybe a log status modal that shows the status as it is nmap scanning, or if it is directory scanning
-
-* Ensure the requirements.txt has flask, python-nmap, requests, and urllib3
-
-* Front end requirements: cd frontend && npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios // npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios ; npm install
-
 ## Docker Setup
 
 The application can be run using Docker and Docker Compose. This setup includes both the frontend and backend services.
@@ -95,3 +71,35 @@ To monitor additional backup directories:
 The backend container runs with elevated privileges (required for nmap scanning). The example directories are mounted as read-only for security.
 
 i.e., just use ```docker-compose up --build```
+
+
+
+
+
+
+
+# To Do
+
+* need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
+
+* The scan servers and scan directories button does not directly run ./scan_servers or .scan_directories
+
+* Add some type of H1 to explain what this app does, its not easy to understand what this app does atm
+
+* Fix Navbar (its not expanded completely), use tailwind css for styling (instead of the boring bootstrap) --> Actually I think Material UI is the way to go!!!
+
+* add the filename to the backup status (with its original timestamp as well)
+
+* add a search bar and filter for the backup status
+
+* offline the cdn dependencies into the ./public
+
+* Add button to clear files from database, another button to clear servers from database
+
+* Add spinners to make the user aware they need to wait
+
+* Add maybe a log status modal that shows the status as it is nmap scanning, or if it is directory scanning
+
+* Ensure the requirements.txt has flask, python-nmap, requests, and urllib3
+
+* Front end requirements: cd frontend && npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios // npm install react-router-dom @mui/material @emotion/react @emotion/styled @mui/icons-material axios ; npm install
