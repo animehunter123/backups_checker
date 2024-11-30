@@ -13,3 +13,5 @@ A webapp to check if all currently reachable servers have at a backup file in th
 # To Do
 
 * Create Vite Front End, and Python Backend for 1. Scanning Live Network, 2. Scanning Directories
+
+* Ensure the requirements.txt has flask, python-nmap, requests, and urllib3
