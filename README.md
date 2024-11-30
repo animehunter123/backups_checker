@@ -14,7 +14,13 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 # To Do
 
-* Fix Navbar
+* Fix Navbar (its not expanded completely), use tailwind css for styling (instead of the boring bootstrap)
+
+* add the filename to the backup status (with its original timestamp as well)
+
+* add a search bar and filter for the backup status
+
+* offline the cdn dependencies into the ./public
 
 * Add button to clear files from database, another button to clear servers from database
 
