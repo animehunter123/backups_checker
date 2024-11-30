@@ -14,7 +14,9 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 # To Do
 
-* Fix Navbar (its not expanded completely), use tailwind css for styling (instead of the boring bootstrap)
+* Add some type of H1 to explain what this app does, its not easy to understand what this app does atm
+
+* Fix Navbar (its not expanded completely), use tailwind css for styling (instead of the boring bootstrap) --> Actually I think Material UI is the way to go!!!
 
 * add the filename to the backup status (with its original timestamp as well)
 
