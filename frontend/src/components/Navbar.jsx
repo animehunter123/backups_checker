@@ -25,11 +25,28 @@ export default function Navbar() {
     color: theme.palette.navbar.text,
     fontWeight: active ? 600 : 500,
     opacity: active ? 1 : 0.85,
+    position: 'relative',
     '&:hover': {
       opacity: 1,
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
+    ...(active && {
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        bottom: -8,
+        left: 0,
+        right: 0,
+        height: 3,
+        backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#fff',
+        borderRadius: '2px 2px 0 0',
+      }
+    })
   });
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   return (
     <AppBar position="sticky" elevation={0}>
@@ -41,7 +58,12 @@ export default function Navbar() {
             flexGrow: 1,
             fontWeight: 600,
             color: theme.palette.navbar.text,
+            cursor: 'pointer',
+            '&:hover': {
+              opacity: 0.9,
+            }
           }}
+          onClick={handleRefresh}
         >
           Backup Checker
         </Typography>
