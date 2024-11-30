@@ -28,11 +28,29 @@ const findMatchingFile = (server, files) => {
   });
 };
 
+const formatDateTime = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleString(undefined, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+};
+
 const columns = [
   { field: 'hostname', headerName: 'Hostname' },
   { field: 'ip_address', headerName: 'IP Address' },
   { field: 'detected_os', headerName: 'OS' },
-  { field: 'filename', headerName: 'Filename' },
+  { field: 'filename', headerName: 'Backup File' },
+  { 
+    field: 'backup_time', 
+    headerName: 'Backup Time',
+    valueFormatter: (value) => formatDateTime(value)
+  },
   { 
     field: 'status_label', 
     headerName: 'Status',
@@ -67,7 +85,7 @@ const columns = [
   { 
     field: 'last_scan', 
     headerName: 'Last Scan',
-    valueFormatter: (value) => new Date(value).toLocaleString()
+    valueFormatter: (value) => formatDateTime(value)
   }
 ];
 
@@ -88,7 +106,8 @@ export default function BackupStatus() {
         return {
           ...server,
           status_label: getStatusInfo(server.backup_status).sortValue,
-          filename: matchingFile ? matchingFile.filename : 'No matching backup'
+          filename: matchingFile?.filename || '',
+          backup_time: matchingFile?.last_modified || ''
         };
       });
 
