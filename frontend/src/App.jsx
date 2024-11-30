@@ -1,24 +1,25 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import Navbar from './components/Navbar';
 import BackupStatus from './pages/BackupStatus';
 import Directories from './pages/Directories';
 import Servers from './pages/Servers';
+import './App.css';
 
 function App() {
   return (
     <Router>
       <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div className="app-container">
         <Navbar />
-        <Box component="main" sx={{ flexGrow: 1 }}>
+        <main className="content">
           <Routes>
             <Route path="/" element={<BackupStatus />} />
             <Route path="/directories" element={<Directories />} />
             <Route path="/servers" element={<Servers />} />
           </Routes>
-        </Box>
-      </Box>
+        </main>
+      </div>
     </Router>
   );
 }
