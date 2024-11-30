@@ -9,32 +9,48 @@ export default function Navbar() {
   };
 
   const linkStyle = {
-    color: 'white',
     textDecoration: 'none',
-    marginLeft: 2,
-    marginRight: 2,
+    marginLeft: '8px',
+    marginRight: '8px',
   };
 
-  const activeStyle = {
-    ...linkStyle,
-    borderBottom: '2px solid white',
-  };
+  const buttonStyle = (active) => ({
+    color: active ? 'primary.main' : 'text.primary',
+    fontWeight: active ? 600 : 500,
+    '&:hover': {
+      backgroundColor: 'rgba(37, 99, 235, 0.04)',
+    },
+  });
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky" elevation={0}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography 
+          variant="h6" 
+          component="div" 
+          sx={{ 
+            flexGrow: 1,
+            fontWeight: 600,
+            color: 'primary.main',
+          }}
+        >
           Backup Checker
         </Typography>
-        <Box>
-          <Link to="/" style={isActive('/') ? activeStyle : linkStyle}>
-            <Button color="inherit">Backup Status</Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Link to="/" style={linkStyle}>
+            <Button sx={buttonStyle(isActive('/'))}>
+              Backup Status
+            </Button>
           </Link>
-          <Link to="/directories" style={isActive('/directories') ? activeStyle : linkStyle}>
-            <Button color="inherit">Directories</Button>
+          <Link to="/directories" style={linkStyle}>
+            <Button sx={buttonStyle(isActive('/directories'))}>
+              Directories
+            </Button>
           </Link>
-          <Link to="/servers" style={isActive('/servers') ? activeStyle : linkStyle}>
-            <Button color="inherit">Servers</Button>
+          <Link to="/servers" style={linkStyle}>
+            <Button sx={buttonStyle(isActive('/servers'))}>
+              Servers
+            </Button>
           </Link>
         </Box>
       </Toolbar>
