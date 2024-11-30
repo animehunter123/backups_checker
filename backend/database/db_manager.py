@@ -25,9 +25,9 @@ class DatabaseManager:
                 )
             ''')
             
-            # Create table for servers with additional nmap information
+            # Create table for scanned servers with additional nmap information
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS servers (
+                CREATE TABLE IF NOT EXISTS scanned_servers (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     hostname TEXT NOT NULL,
                     ip_address TEXT,
@@ -72,14 +72,14 @@ class DatabaseManager:
             cursor = conn.cursor()
             
             # Check if server exists
-            cursor.execute('SELECT id FROM servers WHERE hostname = ?', (hostname,))
+            cursor.execute('SELECT id FROM scanned_servers WHERE hostname = ?', (hostname,))
             result = cursor.fetchone()
             
             if result:
                 # Update existing server
                 server_id = result[0]
                 cursor.execute('''
-                    UPDATE servers 
+                    UPDATE scanned_servers 
                     SET ip_address = ?,
                         detected_os = ?,
                         open_ports = ?,
@@ -99,7 +99,7 @@ class DatabaseManager:
             else:
                 # Insert new server
                 cursor.execute('''
-                    INSERT INTO servers (
+                    INSERT INTO scanned_servers (
                         hostname, ip_address, detected_os, open_ports,
                         last_scan, is_reachable
                     )
@@ -118,5 +118,5 @@ class DatabaseManager:
         """Retrieve all servers from the database."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM servers')
+            cursor.execute('SELECT * FROM scanned_servers')
             return cursor.fetchall()

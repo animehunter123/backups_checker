@@ -27,3 +27,4 @@ dist-ssr
 .venv
 __pycache__
 backup_checker.db
+test_backup_checker.db
