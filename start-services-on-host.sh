@@ -1,21 +1,34 @@
 #!/bin/bash
 
-echo "Killing all python processes..."
-pkill -f python
+# Store the script's PID
+SCRIPT_PID=$$
 
-echo "Killing all npm processes..."
-pkill -f npm
+# Function to cleanup child processes
+cleanup() {
+    echo "Shutting down services..."
+    # Kill all child processes in the process group
+    pkill -P $SCRIPT_PID
+    exit 0
+}
 
-echo "Starting frontend..."
-cd frontend
+# Trap SIGINT (Ctrl+C) and SIGTERM
+trap cleanup SIGINT SIGTERM
+
+# Start backend service
+echo "Starting backend service..."
+cd backend
+python3 app.py &
+BACKEND_PID=$!
+
+# Start frontend service
+echo "Starting frontend service..."
+cd ../frontend
 npm run dev &
+FRONTEND_PID=$!
 
-echo "Starting backend..."
-cd ../backend
-python app.py
+echo "All services started. Press Ctrl+C to stop all services."
+echo "Backend PID: $BACKEND_PID"
+echo "Frontend PID: $FRONTEND_PID"
 
-echo "To kill all processes, run:"
-echo "pkill -f python"
-echo "pkill -f npm"
-
-echo "Script completed. All services started."
+# Wait for any child process to exit
+wait

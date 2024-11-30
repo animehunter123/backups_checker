@@ -3,6 +3,9 @@
 # IMPORTANT!!!!!!
 # You need to run this script with sudo privileges!!!!!! THIS IS BECAUSE WE USE NMAP PIP MODULE HERE
 # sudo python3 app.py
+# OTHERWISE YOU WILL GET THIS ERROR:
+# OSError: [Errno 13] Permission denied: '/var/run/nmap/nmap.sock'
+# OR... POST 500 ERRORS: 127.0.0.1 - - [30/Nov/1998 22:45:38] "POST /api/scan/servers HTTP/1.1" 500 -
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS

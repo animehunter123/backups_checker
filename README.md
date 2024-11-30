@@ -80,6 +80,11 @@ i.e., just use ```docker-compose up --build```
 
 # To Do
 
+* this is still kind of a "best effort" app, some things are missing... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this:
+```
+10.197.38.12 <--- even though your target server IP is really 10.197.38.1 <-- ughh!!!
+```
+
 * need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
 
 * need to make the CDN's all become embedded into the app for homelab without internet
