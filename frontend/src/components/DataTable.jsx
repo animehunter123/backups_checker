@@ -49,14 +49,21 @@ export default function DataTable({ data, columns, onExportCsv }) {
     }
   };
 
+  const getCellValue = (row, column) => {
+    if (column.valueGetter) {
+      return column.valueGetter(row);
+    }
+    return row[column.field];
+  };
+
   const sortedData = [...data].sort((a, b) => {
     if (!orderBy) return 0;
     
-    const aValue = a[orderBy];
-    const bValue = b[orderBy];
+    const aValue = getCellValue(a, columns.find(col => col.field === orderBy));
+    const bValue = getCellValue(b, columns.find(col => col.field === orderBy));
 
-    if (!aValue) return 1;
-    if (!bValue) return -1;
+    if (aValue === null || aValue === undefined) return 1;
+    if (bValue === null || bValue === undefined) return -1;
 
     let comparison;
     if (typeof aValue === 'number') {
@@ -198,9 +205,11 @@ export default function DataTable({ data, columns, onExportCsv }) {
                       color: theme.palette.text.primary,
                     }}
                   >
-                    {column.valueFormatter 
-                      ? column.valueFormatter(row[column.field])
-                      : row[column.field]}
+                    {column.renderCell ? column.renderCell(row) : (
+                      column.valueFormatter 
+                        ? column.valueFormatter(row[column.field])
+                        : row[column.field]
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
