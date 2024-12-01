@@ -28,6 +28,8 @@ sudo bash -c 'rm - f /home/p*/dev/backup_checker/backend/backup_checker.db; sour
 
 ```
 
+* config validation in frontend/backend is needed, for now it accepts anything (and still works, becareful to never add 0.0.0.0 to the list of servers to check)
+
 * need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
 
 * need to make the CDN's all become embedded into the app for homelab without internet
