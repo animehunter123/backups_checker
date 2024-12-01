@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 import os
 from pathlib import Path
 import re
+import json
 from scan_dirs.scan_dirs import DirectoryScanner
 from scan_servers.scan_servers import SubnetScanner
 
@@ -198,6 +199,41 @@ def scan_servers():
             'status': 'error',
             'message': str(e)
         }), 500
+
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    """Get the current configuration."""
+    try:
+        with open('config.json', 'r') as f:
+            config = f.read()
+        return config, 200, {'Content-Type': 'application/json'}
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/config', methods=['PUT'])
+def update_config():
+    """Update the configuration file."""
+    try:
+        config = request.get_json()
+        
+        # Validate the configuration structure
+        if not isinstance(config, dict):
+            return jsonify({'error': 'Invalid configuration format'}), 400
+        
+        required_fields = ['directories_to_scan', 'subnets_to_scan']
+        for field in required_fields:
+            if field not in config:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+            if not isinstance(config[field], list):
+                return jsonify({'error': f'{field} must be a list'}), 400
+        
+        # Write the new configuration
+        with open('config.json', 'w') as f:
+            json.dump(config, f, indent=4)
+        
+        return jsonify({'message': 'Configuration updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/health', methods=['GET'])
 def health_check():

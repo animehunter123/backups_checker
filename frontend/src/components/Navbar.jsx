@@ -1,8 +1,12 @@
-import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import { DataGrid } from '@mui/x-data-grid';
 import { ColorModeContext } from '../theme/ColorModeContext';
 import { useTheme } from '@mui/material/styles';
 
@@ -10,6 +14,117 @@ export default function Navbar() {
   const location = useLocation();
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [config, setConfig] = useState({ directories_to_scan: [], subnets_to_scan: [] });
+  const [dirRows, setDirRows] = useState([]);
+  const [subnetRows, setSubnetRows] = useState([]);
+
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  useEffect(() => {
+    // Convert config arrays to row format with IDs
+    setDirRows(config.directories_to_scan.map((dir, index) => ({
+      id: index,
+      path: dir,
+    })));
+    setSubnetRows(config.subnets_to_scan.map((subnet, index) => ({
+      id: index,
+      subnet: subnet,
+    })));
+  }, [config]);
+
+  const fetchConfig = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/config');
+      const data = await response.json();
+      setConfig(data);
+    } catch (error) {
+      console.error('Error fetching config:', error);
+    }
+  };
+
+  const handleSaveConfig = async () => {
+    try {
+      const newConfig = {
+        directories_to_scan: dirRows.map(row => row.path),
+        subnets_to_scan: subnetRows.map(row => row.subnet),
+      };
+
+      const response = await fetch('http://localhost:5000/api/config', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newConfig),
+      });
+      if (response.ok) {
+        setConfig(newConfig);
+        setOpenSettings(false);
+      } else {
+        console.error('Failed to update config');
+      }
+    } catch (error) {
+      console.error('Error updating config:', error);
+    }
+  };
+
+  const handleAddDirectory = () => {
+    const newId = dirRows.length > 0 ? Math.max(...dirRows.map(r => r.id)) + 1 : 0;
+    setDirRows([...dirRows, { id: newId, path: './new/directory/' }]);
+  };
+
+  const handleAddSubnet = () => {
+    const newId = subnetRows.length > 0 ? Math.max(...subnetRows.map(r => r.id)) + 1 : 0;
+    setSubnetRows([...subnetRows, { id: newId, subnet: '0.0.0.0/24' }]);
+  };
+
+  const dirColumns = [
+    { 
+      field: 'path', 
+      headerName: 'Directory Path', 
+      flex: 1,
+      editable: true 
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: (params) => (
+        <IconButton
+          onClick={() => setDirRows(dirRows.filter(row => row.id !== params.row.id))}
+          color="error"
+          size="small"
+        >
+          <DeleteIcon />
+        </IconButton>
+      ),
+    }
+  ];
+
+  const subnetColumns = [
+    { 
+      field: 'subnet', 
+      headerName: 'Subnet', 
+      flex: 1,
+      editable: true 
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: (params) => (
+        <IconButton
+          onClick={() => setSubnetRows(subnetRows.filter(row => row.id !== params.row.id))}
+          color="error"
+          size="small"
+        >
+          <DeleteIcon />
+        </IconButton>
+      ),
+    }
+  ];
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -49,7 +164,7 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="sticky" elevation={0}>
+    <AppBar position="static" color="primary">
       <Toolbar>
         <Typography 
           variant="h6" 
@@ -83,21 +198,78 @@ export default function Navbar() {
               Servers
             </Button>
           </Link>
-          <IconButton
-            onClick={colorMode.toggleColorMode}
-            color="inherit"
-            sx={{
-              ml: 2,
-              color: theme.palette.navbar.text,
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              }
-            }}
-          >
-            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
         </Box>
+        <Box sx={{ flexGrow: 1 }} />
+        <IconButton
+          sx={{ ml: 1, color: theme.palette.navbar.text }}
+          onClick={() => setOpenSettings(true)}
+        >
+          <SettingsIcon />
+        </IconButton>
+        <IconButton
+          sx={{ ml: 1, color: theme.palette.navbar.text }}
+          onClick={colorMode.toggleColorMode}
+        >
+          {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton>
       </Toolbar>
+
+      <Dialog 
+        open={openSettings} 
+        onClose={() => setOpenSettings(false)} 
+        maxWidth="md" 
+        fullWidth
+      >
+        <DialogTitle>Configuration Settings</DialogTitle>
+        <DialogContent>
+          <Box sx={{ height: 300, mb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Typography variant="h6" sx={{ flexGrow: 1 }}>Directories to Scan</Typography>
+              <Button
+                startIcon={<AddIcon />}
+                variant="contained"
+                size="small"
+                onClick={handleAddDirectory}
+              >
+                Add Directory
+              </Button>
+            </Box>
+            <DataGrid
+              rows={dirRows}
+              columns={dirColumns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              disableSelectionOnClick
+              sx={{ mb: 2 }}
+            />
+          </Box>
+
+          <Box sx={{ height: 300 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Typography variant="h6" sx={{ flexGrow: 1 }}>Subnets to Scan</Typography>
+              <Button
+                startIcon={<AddIcon />}
+                variant="contained"
+                size="small"
+                onClick={handleAddSubnet}
+              >
+                Add Subnet
+              </Button>
+            </Box>
+            <DataGrid
+              rows={subnetRows}
+              columns={subnetColumns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              disableSelectionOnClick
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenSettings(false)}>Cancel</Button>
+          <Button onClick={handleSaveConfig} variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
     </AppBar>
   );
 }

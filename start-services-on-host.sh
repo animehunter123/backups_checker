@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# NOTE
+# This is isn't ideal for production use. Our webapp requires root access b/c of nmap
+# Thus, I normally have a venv for python and npm installed on the host's root, and launch it via:
+# sudo bash -c 'source /root/venv/bin/activate ; cd /home/p*/dev/backup_checker ; ./start-services-on-host.sh'
+
 # Store the script's PID
 SCRIPT_PID=$$
 

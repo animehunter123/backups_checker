@@ -19,7 +19,7 @@ A webapp to check if all currently reachable servers have at a backup file in th
 10.197.38.12 <--- even though your target server IP is really 10.197.38.1 <-- This is a case I cannot handle with this webapp idea unfortunately.!!!
 ```
 
-* settings button to edit the json config file from the front end
+* settings button to edit the json config file from the front end (lets use npm install @mui/x-data-grid for the data grid)
 
 * need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
 
