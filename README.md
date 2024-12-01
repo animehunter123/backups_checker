@@ -18,17 +18,15 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 * settings button to edit the json config file from the front end (lets use npm install @mui/x-data-grid for the data grid)
 
-
-<font color="blue">
 * root dependency is required for nmap, might need a better way, but for now:
-</font>
-<font color="blue">
+```
 To Launch App as root: 
 sudo bash -c 'source /root/venv/bin/activate ; cd /home/p*/dev/backup_checker ; ./start-services-on-host.sh'
 
 To Rebuild SQlite database from scratchas root:
 sudo bash -c 'rm - f /home/p*/dev/backup_checker/backend/backup_checker.db; source /root/venv/bin/activate ; cd /home/p*/dev/backup_checker/backend ; ./scan_dirs/scan_dirs.py ; ./scan_servers/scan_servers.py'
-</font>
+
+```
 
 * need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
 
