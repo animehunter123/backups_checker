@@ -1,12 +1,10 @@
 {
     "directories_to_scan": [
         "./example/nas01/",
-        "./example/nas02/",
-        "ssdsd"
+        "./example/nas02/"
     ],
     "subnets_to_scan": [
         "172.17.0.0/24",
-        "10.197.38.0/24",
-        "sfgsdf"
+        "10.197.38.0/24"
     ]
 }
