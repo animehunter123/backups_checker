@@ -14,10 +14,7 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 # To Do
 
-* Design Principle Problem: Still a "best effort" to assume backup files match the hostname/ip... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this:
-```
-10.197.38.12 <--- even though your target server IP is really 10.197.38.1 <-- This is a case I cannot handle with this webapp idea unfortunately.!!!
-```
+* **<font color="red">Design Principle Problem</font>**: Still a "best effort" to assume backup files match the hostname/ip... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this:
 
 * settings button to edit the json config file from the front end (lets use npm install @mui/x-data-grid for the data grid)
 
