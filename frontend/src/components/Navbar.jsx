@@ -47,10 +47,36 @@ export default function Navbar() {
 
   const handleSaveConfig = async () => {
     try {
+      console.log('Raw rows before processing:', {
+        dirRows: dirRows.map(r => ({ id: r.id, path: r.path })),
+        subnetRows: subnetRows.map(r => ({ id: r.id, subnet: r.subnet }))
+      });
+      
+      // Filter out empty values and trim when saving
       const newConfig = {
-        directories_to_scan: dirRows.map(row => row.path),
-        subnets_to_scan: subnetRows.map(row => row.subnet),
+        directories_to_scan: dirRows
+          .map(row => {
+            console.log(`Processing directory row:`, row);
+            return row.path?.trim();
+          })
+          .filter(path => {
+            const keep = path && path !== '';
+            console.log(`Directory path "${path}" - keep? ${keep}`);
+            return keep;
+          }),
+        subnets_to_scan: subnetRows
+          .map(row => {
+            console.log(`Processing subnet row:`, row);
+            return row.subnet?.trim();
+          })
+          .filter(subnet => {
+            const keep = subnet && subnet !== '';
+            console.log(`Subnet "${subnet}" - keep? ${keep}`);
+            return keep;
+          })
       };
+
+      console.log('Final config to be sent:', JSON.stringify(newConfig, null, 2));
 
       const response = await fetch('http://localhost:5000/api/config', {
         method: 'PUT',
@@ -59,25 +85,54 @@ export default function Navbar() {
         },
         body: JSON.stringify(newConfig),
       });
+
+      const responseData = await response.json();
+      console.log('Server response:', {
+        status: response.status,
+        ok: response.ok,
+        data: responseData
+      });
+
       if (response.ok) {
         setConfig(newConfig);
         setOpenSettings(false);
       } else {
-        console.error('Failed to update config');
+        console.error('Failed to update config:', responseData.error);
       }
     } catch (error) {
       console.error('Error updating config:', error);
     }
   };
 
+  const handleProcessRowUpdate = (newRow, oldRow) => {
+    console.log('Processing row update:', { newRow, oldRow });
+    
+    // Update the appropriate state based on which grid is being edited
+    if ('path' in newRow) {
+      setDirRows(prevRows => 
+        prevRows.map(row => row.id === newRow.id ? newRow : row)
+      );
+    } else if ('subnet' in newRow) {
+      setSubnetRows(prevRows => 
+        prevRows.map(row => row.id === newRow.id ? newRow : row)
+      );
+    }
+    
+    return newRow;
+  };
+
   const handleAddDirectory = () => {
     const newId = dirRows.length > 0 ? Math.max(...dirRows.map(r => r.id)) + 1 : 0;
-    setDirRows([...dirRows, { id: newId, path: './new/directory/' }]);
+    const newRow = { id: newId, path: '' };
+    console.log('Adding new directory row:', newRow);
+    setDirRows(prev => [...prev, newRow]);
   };
 
   const handleAddSubnet = () => {
     const newId = subnetRows.length > 0 ? Math.max(...subnetRows.map(r => r.id)) + 1 : 0;
-    setSubnetRows([...subnetRows, { id: newId, subnet: '0.0.0.0/24' }]);
+    const newRow = { id: newId, subnet: '' };
+    console.log('Adding new subnet row:', newRow);
+    setSubnetRows(prev => [...prev, newRow]);
   };
 
   const dirColumns = [
@@ -85,7 +140,7 @@ export default function Navbar() {
       field: 'path', 
       headerName: 'Directory Path', 
       flex: 1,
-      editable: true 
+      editable: true
     },
     {
       field: 'actions',
@@ -93,7 +148,10 @@ export default function Navbar() {
       width: 100,
       renderCell: (params) => (
         <IconButton
-          onClick={() => setDirRows(dirRows.filter(row => row.id !== params.row.id))}
+          onClick={() => {
+            console.log('Deleting directory row:', params.row);
+            setDirRows(prev => prev.filter(row => row.id !== params.row.id));
+          }}
           color="error"
           size="small"
         >
@@ -108,7 +166,7 @@ export default function Navbar() {
       field: 'subnet', 
       headerName: 'Subnet', 
       flex: 1,
-      editable: true 
+      editable: true
     },
     {
       field: 'actions',
@@ -116,7 +174,10 @@ export default function Navbar() {
       width: 100,
       renderCell: (params) => (
         <IconButton
-          onClick={() => setSubnetRows(subnetRows.filter(row => row.id !== params.row.id))}
+          onClick={() => {
+            console.log('Deleting subnet row:', params.row);
+            setSubnetRows(prev => prev.filter(row => row.id !== params.row.id));
+          }}
           color="error"
           size="small"
         >
@@ -239,7 +300,12 @@ export default function Navbar() {
               columns={dirColumns}
               pageSize={5}
               rowsPerPageOptions={[5]}
-              disableSelectionOnClick
+              processRowUpdate={handleProcessRowUpdate}
+              onProcessRowUpdateError={(error) => {
+                console.error('Error processing row update:', error);
+              }}
+              experimentalFeatures={{ newEditingApi: true }}
+              editMode="cell"
               sx={{ mb: 2 }}
             />
           </Box>
@@ -261,13 +327,31 @@ export default function Navbar() {
               columns={subnetColumns}
               pageSize={5}
               rowsPerPageOptions={[5]}
-              disableSelectionOnClick
+              processRowUpdate={handleProcessRowUpdate}
+              onProcessRowUpdateError={(error) => {
+                console.error('Error processing row update:', error);
+              }}
+              experimentalFeatures={{ newEditingApi: true }}
+              editMode="cell"
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenSettings(false)}>Cancel</Button>
-          <Button onClick={handleSaveConfig} variant="contained">Save</Button>
+          <Button onClick={() => {
+            console.log('Canceling changes. Current state:', { dirRows, subnetRows });
+            setOpenSettings(false);
+          }}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={() => {
+              console.log('Saving changes. Current state:', { dirRows, subnetRows });
+              handleSaveConfig();
+            }} 
+            variant="contained"
+          >
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </AppBar>

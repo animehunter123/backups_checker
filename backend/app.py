@@ -214,25 +214,42 @@ def get_config():
 def update_config():
     """Update the configuration file."""
     try:
+        print("Received config update request")
         config = request.get_json()
+        print("Received config data:", json.dumps(config, indent=2))
         
         # Validate the configuration structure
         if not isinstance(config, dict):
+            print("Error: Config is not a dictionary")
             return jsonify({'error': 'Invalid configuration format'}), 400
         
         required_fields = ['directories_to_scan', 'subnets_to_scan']
         for field in required_fields:
             if field not in config:
+                print(f"Error: Missing field {field}")
                 return jsonify({'error': f'Missing required field: {field}'}), 400
             if not isinstance(config[field], list):
+                print(f"Error: {field} is not a list")
                 return jsonify({'error': f'{field} must be a list'}), 400
+            
+            # Filter out empty strings and validate non-empty values
+            original_values = config[field]
+            filtered_values = [item.strip() for item in config[field] if item and item.strip()]
+            print(f"Field {field}:")
+            print(f"  Original values: {original_values}")
+            print(f"  Filtered values: {filtered_values}")
+            config[field] = filtered_values
+        
+        print("Final config to save:", json.dumps(config, indent=2))
         
         # Write the new configuration
         with open('config.json', 'w') as f:
             json.dump(config, f, indent=4)
         
+        print("Config saved successfully")
         return jsonify({'message': 'Configuration updated successfully'}), 200
     except Exception as e:
+        print(f"Error updating config: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/health', methods=['GET'])
