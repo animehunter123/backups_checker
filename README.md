@@ -14,11 +14,11 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 # To Do
 
-* **<font color="red">Design Principle Problem</font>**: Still a "best effort" to assume backup files match the hostname/ip... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this:
+* **<font color="red">Design Principle Problem</font>**: Still a "best effort" to assume backup files match the hostname/ip... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this
 
-* settings button to edit the json config file from the front end (lets use npm install @mui/x-data-grid for the data grid)
+* settings button to edit the json config file from the front end (for example use npm install @mui/x-data-grid for the data grid)
 
-* root dependency is required for nmap, might need a better way, but for now:
+* root is required for nmap, might need a better way, but for now:
 ```
 To Launch App as root: 
 sudo bash -c 'source /root/venv/bin/activate ; cd /home/p*/dev/backup_checker ; ./start-services-on-host.sh'
@@ -30,7 +30,7 @@ sudo bash -c 'rm - f /home/p*/dev/backup_checker/backend/backup_checker.db; sour
 
 * config validation in frontend/backend is needed, for now it accepts anything (and still works, becareful to never add 0.0.0.0 to the list of servers to check)
 
-* need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory)
+* need the docker-compose for both webapps to allow HMR modification of code (not COPY . . the code into the container into a read-only directory), or just embed node into environment.
 
 * need to make the CDN's all become embedded into the app for homelab without internet
 
