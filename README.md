@@ -18,6 +18,7 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 * convert the backend from python to nodejs for better performance. Lets use a new branch for this, git checkout -b nodejs-backend ; git add . ; git commit -m "convert backend to nodejs" ; git push -u origin nodejs-backend    --- and then in the cloud git clone, git checkout nodejs-backend, cd backend, npm install and good to go
 
+... and then to merge...  merge the README.md FROM the nodejs branch, to the main ROOT BRANCH: git checkout main ; git add README.. done?
 * settings button to edit the json config file from the front end (for example use npm install @mui/x-data-grid for the data grid)
 
 * root is required for nmap, might need a better way, but for now:
