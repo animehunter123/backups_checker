@@ -1,0 +1,21 @@
+{
+  "name": "backups-checker-backend",
+  "version": "1.0.0",
+  "description": "Node.js backend for backups checker application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "sqlite3": "^5.1.6",
+    "node-nmap": "^4.0.0",
+    "moment": "^2.29.4",
+    "express-async-handler": "^1.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

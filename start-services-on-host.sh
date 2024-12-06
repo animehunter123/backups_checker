@@ -22,7 +22,8 @@ trap cleanup SIGINT SIGTERM
 # Start backend service
 echo "Starting backend service..."
 cd backend
-python3 app.py &
+# python3 app.py & # Old Way, please leave this line in script (for ./backend2)
+node app.js &
 BACKEND_PID=$!
 
 # Start frontend service

@@ -16,7 +16,7 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 * **<font color="red">Design Principle Problem</font>**: Still a "best effort" to assume backup files match the hostname/ip... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this
 
-* convert the backend from python to nodejs for better performance
+* convert the backend from python to nodejs for better performance. Lets use a new branch for this, git checkout -b nodejs-backend
 
 * settings button to edit the json config file from the front end (for example use npm install @mui/x-data-grid for the data grid)
 

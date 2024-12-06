@@ -1,24 +1,21 @@
-FROM python:3.9
+FROM node:20-slim
 
 # Install nmap
 RUN apt-get update && apt-get install -y nmap && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Copy package files
+COPY package*.json ./
 
-# Copy the rest of the application
+# Install dependencies
+RUN npm install
+
+# Copy application code
 COPY . .
 
-# Create example directories if they don't exist
-RUN mkdir -p example/nas01 example/nas02
-
-# Make sure the app runs with root privileges for nmap
-USER root
-
+# Expose port
 EXPOSE 5000
 
-# Run with Gunicorn
-CMD ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
+# Start the application
+CMD ["npm", "start"]
