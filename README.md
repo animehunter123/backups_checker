@@ -16,6 +16,8 @@ A webapp to check if all currently reachable servers have at a backup file in th
 
 * **<font color="red">Design Principle Problem</font>**: Still a "best effort" to assume backup files match the hostname/ip... we dont have a standardized filenaming format for acronis or tar backups so you might get a false positive like this
 
+* need to remove the database file from git: git rm backup_checker.db
+
 * convert the backend from python to nodejs for better performance. Lets use a new branch for this, git checkout -b nodejs-backend ; git add . ; git commit -m "convert backend to nodejs" ; git push -u origin nodejs-backend    --- and then in the cloud git clone, git checkout nodejs-backend, cd backend, npm install and good to go
 
 ... and then to merge...  merge the README.md FROM the nodejs branch, to the main ROOT BRANCH: git checkout main ; git add README.. done?
