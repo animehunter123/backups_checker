@@ -5,6 +5,34 @@
 # Thus, I normally have a venv for python and npm installed on the host's root, and launch it via:
 # sudo bash -c 'source /root/venv/bin/activate ; cd /home/p*/dev/backup_checker ; ./start-services-on-host.sh'
 
+# First make sure your host is Ubuntu, your middle name is root, and you have sudo/nmap
+if [ "$EUID" -ne 0 ]; then
+    echo "Not root'ed! Elevating privileges, and restarting script..."
+    exec sudo "$0" "$@"
+fi
+
+if ! command -v nmap &> /dev/null
+then
+    echo "nmap not found. Installing..."
+    if command -v apt-get &> /dev/null
+    then
+        sudo apt-get update
+        sudo apt-get install -y nmap
+    elif command -v yum &> /dev/null
+    then
+        sudo yum update
+        sudo yum install -y nmap
+    else
+        echo "Unable to install nmap. Package manager not found."
+        exit 1
+    fi
+else
+    echo "nmap is already installed."
+fi
+
+# Install python-nmap (THIS IS HORRIBLE WAY TO DO THIS!!!!!!!!!!!!!! #FIX #TODO)
+sudo pip3 install python-nmap --break-system-packages # WARNING THIS IS HORRIBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 # Store the script's PID
 SCRIPT_PID=$$
 
