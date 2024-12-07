@@ -35,6 +35,9 @@ def get_backup_status(server, files):
     """
     Determine backup status for a server based on matching files.
     Returns: 'green', 'yellow', or 'red' based on backup age.
+    green = backup is less than 1 year old
+    yellow = backup exists but is more than 1 year old
+    red = no backup exists
     """
     server_identifiers = [
         server['hostname'].lower(),
@@ -48,16 +51,18 @@ def get_backup_status(server, files):
             matching_files.append(file)
     
     if not matching_files:
-        return 'red'
+        return 'red'  # No backup exists
     
     # Find most recent backup
     most_recent = max(matching_files, key=lambda x: x['last_modified'])
     last_modified = datetime.fromisoformat(most_recent['last_modified'])
+    age = datetime.now() - last_modified
     
-    # Check if backup is within a year
-    if datetime.now() - last_modified <= timedelta(days=365):
-        return 'green'
-    return 'yellow'
+    # Check backup age
+    if age <= timedelta(days=365):
+        return 'green'  # Less than 1 year old
+    else:
+        return 'yellow'  # Backup exists but is more than 1 year old
 
 @app.route('/api/files', methods=['GET'])
 def get_files():
