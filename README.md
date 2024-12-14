@@ -2,7 +2,8 @@
 
 A webapp to check if all currently reachable servers have at a backup file in the specified target directories.
 
-<img width="964" alt="Sample Photo of Backup Checker Web App" src="https://github.com/user-attachments/assets/d31a7316-8f4d-459b-b008-09248d93d581">
+![Sample Photo of Backup Checker Web App](https://github.com/user-attachments/assets/d31a7316-8f4d-459b-b008-09248d93d581 "Sample Photo of Backup Checker Web App")
+
 
 # Milestone Goals
 
