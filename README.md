@@ -27,7 +27,7 @@ To Launch App as root:
 sudo bash -c 'source /root/venv/bin/activate ; cd /home/p*/dev/backup_checker ; ./start-services-on-host.sh'
 
 To Rebuild/Rescan SQlite database from scratchas root:
-sudo bash -c 'rm - f /home/p*/dev/backup_checker/backend/backup_checker.db; source /root/venv/bin/activate ; cd /home/p*/dev/backup_checker/backend ; ./scan_dirs/scan_dirs.py ; ./scan_servers/scan_servers.py'
+sudo bash -c 'rm - f /home/*p*/dev/backup_checker/backend/backup_checker.db; source /root/venv/bin/activate ; cd /home/*p*/dev/backup_checker/backend ; ./scan_dirs/scan_dirs.py ; ./scan_servers/scan_servers.py'
 
 ```
 
