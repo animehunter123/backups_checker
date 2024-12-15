@@ -30,6 +30,21 @@ else
     echo "nmap is already installed."
 fi
 
+# Check if vite is installed
+if ! command -v vite &> /dev/null
+then
+    echo "vite not found. Installing..."
+    if command -v npm &> /dev/null
+    then
+        sudo npm install -g vite
+    else
+        echo "Unable to install vite. npm not found."
+        exit 1
+    fi
+else
+    echo "vite is already installed."
+fi
+
 # Install python-nmap (THIS IS HORRIBLE WAY TO DO THIS!!!!!!!!!!!!!! #FIX #TODO)
 sudo pip3 install python-nmap --break-system-packages # WARNING THIS IS HORRIBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
