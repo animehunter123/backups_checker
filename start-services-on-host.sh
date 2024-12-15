@@ -37,6 +37,7 @@ then
     if command -v npm &> /dev/null
     then
         sudo npm install -g vite
+        npm install --save-dev vite
     else
         echo "Unable to install vite. npm not found."
         exit 1
