@@ -72,7 +72,7 @@ BACKEND_PID=$!
 # Start frontend service
 echo "Starting frontend service..."
 cd ../frontend
-npm run dev &
+npm run dev --host 0.0.0.0 &
 FRONTEND_PID=$!
 
 echo "All services started. Press Ctrl+C to stop all services."
